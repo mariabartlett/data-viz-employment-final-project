@@ -1,0 +1,510 @@
+---
+title: "PPOL 5202: Final project data wrangling"
+author: "Sam Cohen & Maria Bartlett"
+date: "`r Sys.Date()`"
+format: html
+theme: litera
+toc: TRUE
+toc-location: left
+toc-depth: 5
+fontsize: 10pt
+embed-resources: TRUE
+page-layout: full
+---
+
+## 0. Set-up
+
+```{r}
+#| message: FALSE
+#| warning: FALSE
+#| code-fold: TRUE
+
+# clear global environment
+rm(list = ls())
+
+# set seed
+set.seed(12345)
+
+knitr::opts_chunk$set(echo = TRUE)
+
+# libraries
+library(tidyverse)
+library(janitor)
+library(assertr)
+library(kableExtra)
+library(countrycode)
+library(conflicted)
+
+# specify that conflicting functions should use version from dplyr
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::select)
+
+# set relative paths
+scripts <- getwd()
+data    <- file.path(scripts %>% dirname(),"01_Data")
+input   <- file.path(data,"01_Input")
+output  <- file.path(data,"02_Output")
+
+```
+
+## 1. Data wrangling
+
+### a. ACLED data
+
+#### i. Import raw data and perform initial validation
+
+```{r}
+#| message: False
+#| warning: False
+
+acled <- read.csv(file.path(input,"ACLED_1997-01-01-2024-11-20.csv")) %>%
+  # confirm file unique on event ID
+  verify(anyDuplicated(select(.,event_id_cnty)) == 0) %>%   
+  invisible()
+
+```
+
+#### ii. Clean and aggregate data
+
+```{r}
+#| message: False
+#| warning: False
+
+# initial data prep
+acled_clean_event_level <- acled %>% 
+  select(country, event_date, year, iso, region, admin1, latitude, longitude, fatalities) %>% 
+  mutate(event_date_dt = as.Date(event_date, format = "%d %B %Y")) %>% # date as date-time
+  mutate(month_year    = format(event_date_dt, "%B-%Y")) %>%           # month-year variable
+  mutate(month_year_dt = myd(paste(month_year,"01"))) %>%              # date formatted month-year variable
+  mutate(year          = as.integer(substr(month_year_dt, 1, 4))) %>%  # extract year
+  # standardize country names to ISO 3166-1 alpha-3 codes (3-letter codes)
+  mutate(country_code = countrycode(country, origin = "country.name", destination = "iso3c")) %>%
+  # manually update several cases package couldn't match
+  mutate(country_code = case_when(country == "Micronesia"   ~ "FSM",
+                                  country == "Saint-Martin" ~ "MAF",
+                                  TRUE                      ~ country_code)) %>%
+  # drop Akrotiri & Dhekelia and Kosovo, which don't have ISO codes
+  filter(country != "Akrotiri and Dhekelia" & country != "Kosovo") %>%
+  # confirm country code assigned for all remaining observations
+  verify(!is.na(country_code)) %>%
+  verify(between(year,1997,2024)) %>%                                  # confirm range of data is 1997-2024
+  verify(!is.na(fatalities) & between(fatalities,0,1350)) %>%          # confirm fatalities flag is never missing and check range
+  invisible()
+
+# check date variable constructions and country code construction for first 20 observations
+acled_clean_event_level %>%
+  slice_head(n = 20) %>%
+  select(country,country_code,event_date,event_date_dt,month_year,month_year_dt,year) %>%
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+# select one country - year/month combination to validate before collapse
+acled_clean_event_level %>%
+  filter(country == "Argentina" & month_year == "November-2018") %>%
+  verify(nrow(.) == 144) %>%
+  verify(sum(fatalities) == 12) %>%
+  invisible()
+
+# collapse data to country - month - year level
+acled_clean_cntry_monthyr_level <- acled_clean_event_level %>%
+  group_by(country_code, month_year,year) %>% 
+  summarize(events_count = n(),                 # number of armed clash events in each country by month
+            total_deaths = sum(fatalities)) %>% # total number of fatalities by country and month
+  ungroup() %>%
+  arrange(desc(events_count)) %>%  # arrange in descending order on number of events
+  verify(anyDuplicated(select(.,c("country_code","month_year"))) == 0)
+
+# validate constructions by checking same country - year/month combination as above
+acled_clean_cntry_monthyr_level %>%
+  filter(country_code == "ARG" & month_year == "November-2018") %>%
+  verify(nrow(.) == 1) %>%
+  verify(events_count == 144) %>%
+  verify(total_deaths == 12) %>%
+  invisible()
+
+# examine head of collapsed country-month-year data
+head(acled_clean_cntry_monthyr_level) %>% 
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+# collapse data to country-year level
+acled_clean_cntry_yr_level <- acled_clean_cntry_monthyr_level %>%
+  group_by(country_code,year) %>%
+  summarize(acled_num_incidents_in_year   = sum(events_count),
+            acled_num_deaths_in_year      = sum(total_deaths)) %>%
+  ungroup() %>%
+  verify(anyDuplicated(select(.,c("country_code","year"))) == 0)
+
+# examine head of collapsed country-year data
+head(acled_clean_cntry_yr_level) %>% 
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+```
+
+### b. World Bank WDI Unemployment data
+
+#### i. Import raw data and perform initial validation
+
+```{r}
+#| message: False
+#| warning: False
+
+unemp <- read.csv(file.path(input,"wb_wdi_unemp.csv")) %>%
+  # remove last 12 rows (table footnotes/empty rows)
+  slice_head(n=nrow(.) - 12) %>%  
+  # confirm file unique on variable series - country description level (not all entries represent countries, see below)
+  verify(anyDuplicated(select(.,c(Series.Name,Country.Name))) == 0) %>%   
+  invisible()
+
+```
+
+#### ii. Clean data
+
+```{r}
+#| message: False
+#| warning: False
+
+# examine entries 218 onward in list of distinct country names and
+# validate that all represent aggregated areas or other classifications
+unemp %>% 
+  select(Country.Name) %>%
+  distinct() %>%
+  slice_tail(n = nrow(.)-217) %>% 
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+# extract vector with these aggregated areas/other classifications
+remove_rows <- unemp %>%
+  select(Country.Name) %>%
+  distinct() %>%
+  verify(nrow(.) == 266) %>%   # 266 unique values of country name
+  slice_tail(n = nrow(.)-217) %>%
+  pull()
+
+# cleaning
+unemp_clean <- unemp %>% 
+  # apply general cleaning to column names
+  clean_names() %>%
+  select(-c("series_code")) %>%
+  # remove rows representing aggregated areas/other descriptions
+  filter(!(country_name %in% remove_rows)) %>%
+  # clean year columns
+  rename_with(.,~substr(.x,2,5),starts_with("x")) %>%
+  # recode '..' values to NA across all year variables
+  mutate(across(starts_with("19") | starts_with("20"), ~str_replace(.,fixed('..'),NA_character_))) %>%
+  # confirm all data for 1990 is always missing
+  verify(is.na(`1990`)) %>%
+  # drop 1990 column
+  select(-`1990`) %>%
+  # pivoting years to column
+  pivot_longer(
+    cols = !c("series_name","country_name","country_code"),
+    names_to = "year",
+    values_to = "value") %>%
+  # convert year and value to integers
+  mutate(year  = as.integer(year),
+         value = as.integer(value)) %>%
+  # order columns
+  select(country_name,country_code,year,series_name,value) %>%
+  # rename series name to variable name for clarity
+  rename(variable_name = series_name) %>%
+  # confirm unique on variable-country-year level
+  verify(anyDuplicated(select(.,c(variable_name,country_name,year))) == 0) %>%
+  # confirm year between 1991 and 2023
+  verify(between(year,1991,2023)) %>%
+  # confirm dataset includes 6 variable types
+  verify(variable_name %in% c("Unemployment, female (% of female labor force) (modeled ILO estimate)",
+                              "Unemployment, male (% of male labor force) (modeled ILO estimate)",
+                              "Unemployment, total (% of total labor force) (modeled ILO estimate)",
+                              "Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate)",
+                              "Unemployment, youth male (% of male labor force ages 15-24) (modeled ILO estimate)",
+                              "Unemployment, youth total (% of total labor force ages 15-24) (modeled ILO estimate)")) %>%
+  # order on variable-country-year
+  arrange(variable_name,country_name,year)
+
+# examine head of clean unemployment data
+head(unemp_clean) %>% 
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+```
+
+### c. Population data
+
+#### i. Import raw data and perform initial validation
+
+```{r}
+#| message: False
+#| warning: False
+
+pop <- read.csv(file.path(input,"wb_wdi_pop.csv")) %>%
+  # remove last 7 rows (table footnotes/empty rows)
+  slice_head(n=nrow(.) - 7) %>%  
+  # confirm file unique on country description level (not all entries represent countries, see below)
+  verify(anyDuplicated(select(.,c(Country.Name))) == 0) %>%   
+  # confirm 266 unique values of country name (same as unemployment data above)
+  verify(nrow(.) == 266) %>%
+  invisible()
+
+```
+
+#### ii. Clean data
+
+```{r}
+#| message: False
+#| warning: False
+
+pop_clean <- pop %>% 
+  # apply general cleaning to column names
+  clean_names() %>%
+  select(-c("series_code")) %>%
+  # remove rows representing aggregated areas/other descriptions
+  filter(!(country_name %in% remove_rows)) %>%
+  # clean year columns
+  rename_with(.,~substr(.x,2,5),starts_with("x")) %>%
+  # pivoting years to column
+  pivot_longer(
+    cols = !c("series_name","country_name","country_code"),
+    names_to = "year",
+    values_to = "value") %>%
+  # convert year and value to integers
+  mutate(year  = as.integer(year),
+         value = as.integer(value)) %>%
+  # confirm series_name = "Population, total" for all observations
+  verify(series_name == "Population, total") %>%
+  # order and refine columns
+  select(country_name,country_code,year,value) %>%
+  # rename value to population_year
+  rename(population_year = value) %>%
+  # confirm unique on country-year level
+  verify(anyDuplicated(select(.,c(country_name,year))) == 0) %>%
+  # confirm year between 1990 and 2023
+  verify(between(year,1990,2023)) %>%
+  # order on country-year
+  arrange(country_name,year)
+
+# examine head of clean population data
+head(pop_clean) %>% 
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+```
+
+### d. Employment by sector and gender
+
+#### i. Import raw data and perform initial validation
+
+```{r}
+#| message: False
+#| warning: False
+
+employ_by_sector <- read.csv(file.path(input,"EMP_TEMP_SEX_IND_NB_A-filtered-2024-11-23.csv")) %>%
+  # confirm file unique on country - year - variable type - employment sector level
+  verify(anyDuplicated(select(.,c(ref_area.label,indicator.label,sex.label,classif1.label,time))) == 0) %>%   
+  invisible()
+
+```
+
+#### ii. Clean data
+
+```{r}
+#| message: False
+#| warning: False
+
+# initial data prep
+employ_by_sector_clean <- employ_by_sector %>% 
+  # apply general cleaning to column names
+  clean_names() %>%
+  # data came from 66 different survey sources -- DISCUSS IN LIMITATIONS
+  verify(length(unique(source_label)) == 66) %>%
+  # confirm variable type is always employment by sector and sex
+  verify(indicator_label == "Employment by ILO sector and sex (thousands)") %>%
+  # confirm values of gender variable
+  verify(sex_label %in% c("Sex: Female","Sex: Male","Sex: Other","Sex: Total")) %>%
+  # keep only total rows
+  filter(sex_label == "Sex: Total") %>%
+  # remove "ILO sector:" prefix
+  mutate(industry_sector = str_squish(str_replace(classif1_label,"^ILO sector:","")))
+
+# tabulate industry variable
+count(employ_by_sector_clean,industry_sector) %>%
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+# cross-tabulate obs_status vs. note_indicator_label variable    -- DISCUSS IN LIMITATIONS
+count(employ_by_sector_clean,obs_status_label,note_indicator_label) %>%
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+# continue cleaning
+employ_by_sector_clean <- employ_by_sector_clean %>%
+  # remove industry total rows
+  filter(industry_sector != "Total") %>%
+  # keep variables of interest
+  select(ref_area_label,industry_sector,time,obs_value,obs_status_label) %>%
+  # rename variables for clarity
+  rename(country_name            = ref_area_label,
+         year                    = time,
+         employment_in_thousands = obs_value,
+         data_issue              = obs_status_label) %>%
+  # generate employment x 1000
+  mutate(employment_count = employment_in_thousands * 1000) %>%
+  # confirm year is between 2000 and 2023 (not all countries have all years)
+  verify(between(year,2000,2023)) %>%
+  # confirm range of employment counts make sense
+  verify(between(employment_in_thousands,0,203151.43) | is.na(employment_in_thousands)) %>%
+  # confirm unique on country-year-industry level
+  verify(anyDuplicated(select(.,c(country_name,year,industry_sector))) == 0) %>%
+  # standardize country names to ISO 3166-1 alpha-3 codes (3-letter codes)
+  mutate(country_code = countrycode(country_name, origin = "country.name", destination = "iso3c")) %>%
+  # drop Kosovo, which doesn't have an ISO code
+  filter(country_name != "Kosovo") %>%
+  # confirm country code not missing for remaining observations
+  verify(!is.na(country_code)) %>%
+  select(country_name,country_code,year,industry_sector,employment_count,data_issue) %>%
+  # sort on country-year-industry 
+  arrange(country_name,year,industry_sector)
+
+# examine head of clean industry data
+head(employ_by_sector_clean) %>% 
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+```
+
+## 2. Data merges
+
+### i. Population and unemployment
+
+```{r}
+#| message: False
+#| warning: False
+
+# keep records in both files
+pop_unemp <- inner_join(unemp_clean, 
+                        pop_clean, 
+                        by = c("country_name", "country_code", "year"), 
+                        relationship = "many-to-one")
+
+```
+
+### ii. Population-unemployment and ACLED annual
+
+```{r}
+#| message: False
+#| warning: False
+
+# merge the data frames using the standardized country codes, keeping records in unemployment/population data 
+pop_unemp_acled <- left_join(pop_unemp, 
+                             acled_clean_cntry_yr_level, 
+                             by = c("country_code", "year"),
+                             relationship = "many-to-one") %>%
+  # filter year to range where ACLED data is available (1997 to 2023)
+  filter(between(year,1997,2023)) %>%
+  verify(nrow(.) == 35154) %>%
+  # confirm unique on country - year - variable level
+  verify(anyDuplicated(select(.,c(country_name,year,variable_name))) == 0) %>%
+  # order variables
+  select(country_name,country_code,year,variable_name,value,population_year,acled_num_incidents_in_year,acled_num_deaths_in_year) %>%
+  # rename variables for clarity
+  rename(unemployment_metric         = variable_name,
+         unemployment_value          = value) %>%
+  # new constructs
+  mutate(num_incidents_per100k_people = (acled_num_incidents_in_year / population_year) * 100000,     # events per 100k people
+         num_deaths_per100k_people    = (acled_num_deaths_in_year    / population_year) * 100000) %>% # deaths per 100k people
+  # confirm all possible country-year-unemployment metric combinations are already represented in the data
+  complete(country_name,year,unemployment_metric) %>%
+  verify(nrow(.) == 35154)
+  
+# examine head of population - unemployment - ACLED data (temporarily dropping NAs)
+head(pop_unemp_acled %>% drop_na(),25) %>% 
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+```
+
+### iii. Employment by sector and ACLED annual
+
+```{r}
+#| message: False
+#| warning: False
+
+# merge employment by sector and population data frames using the standardized country codes, keeping records in both employment and population data 
+employ_by_sector_pop <- inner_join(employ_by_sector_clean %>% select(-country_name), 
+                                   pop_clean, 
+                                   by = c("country_code", "year"), 
+                                   relationship = "many-to-one")
+
+# merge employment by sector with population with ACLED data, keeping records in employment/population data
+employ_by_sector_acled <- left_join(employ_by_sector_pop, 
+                                    acled_clean_cntry_yr_level, 
+                                    by = c("country_code", "year"),
+                                    relationship = "many-to-one") %>%
+  # confirm year ranges from 2000 to 2023
+  verify(between(year,2000,2023)) %>%
+  verify(nrow(.) == 18510) 
+
+# use the complete() function to create rows for all possible country-year-sector combinations so it's clear where there
+# is missing data
+employ_by_sector_acled <- employ_by_sector_acled %>%
+  complete(country_name,year,industry_sector) %>%
+  # populate country code within country name
+  group_by(country_name) %>%
+  fill(.,country_code,.direction = "downup") %>%
+  ungroup() %>%
+  # adds over 50,000 rows
+  verify(nrow(.) == 68448) %>%
+  # confirm unique on country - year - sector level
+  verify(anyDuplicated(select(.,c(country_name,year,industry_sector))) == 0) %>%
+  # order variables
+  select(country_name,country_code,year,industry_sector,employment_count,population_year,data_issue,acled_num_incidents_in_year,acled_num_deaths_in_year) %>%
+  # rename variables for clarity
+  rename(sector_data_issue      = data_issue,
+         num_employed_in_sector = employment_count) %>%
+  # new constructs
+  mutate(num_incidents_per100k_people     = (acled_num_incidents_in_year / population_year) * 100000,  # events per 100k people
+         num_deaths_per100k_people        = (acled_num_deaths_in_year    / population_year) * 100000,  # deaths per 100k people
+         pct_total_pop_employed_in_sector = (num_employed_in_sector / population_year) * 100) %>%      # percent of total population employed in sector
+  # confirm percent employed in sector falls between 0 and 50%
+  verify(between(pct_total_pop_employed_in_sector,0,50) | is.na(pct_total_pop_employed_in_sector)) %>%
+  # final variable ordering
+  select(country_name,country_code,year,industry_sector,num_employed_in_sector,population_year,pct_total_pop_employed_in_sector,
+         acled_num_incidents_in_year,acled_num_deaths_in_year,num_incidents_per100k_people,num_deaths_per100k_people,sector_data_issue) %>%
+  # sort on country - year - sector level
+  arrange(country_name,year,industry_sector)
+         
+# examine head of population - employment by sector - ACLED data (temporarily dropping NAs)
+head(employ_by_sector_acled %>% drop_na(),25) %>% 
+  kbl(full_width = T, 
+      align = "l") %>%
+  kable_styling(bootstrap_options = c("striped","hover"))
+
+```
+
+## 3. Export clean data
+
+```{r}
+#| message: False
+#| warning: False
+
+# event-level ACLED data
+write.csv(acled_clean_event_level,file.path(output,"ACLED-event-level-1997-2024.csv"),row.names = FALSE)
+
+# merged ACLED - population - unemployment data
+write.csv(pop_unemp_acled,file.path(output,"ACLED-unemployment-annual-1997-2023.csv"),row.names = FALSE)
+
+# merged ACLED - employment by sector data
+write.csv(employ_by_sector_acled,file.path(output,"ACLED-sector-employment-annual-2000-2023.csv"),row.names = FALSE)
+
+```
