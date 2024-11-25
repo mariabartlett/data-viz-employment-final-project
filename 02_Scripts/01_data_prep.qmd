@@ -208,7 +208,7 @@ unemp_clean <- unemp %>%
     values_to = "value") %>%
   # convert year and value to integers
   mutate(year  = as.integer(year),
-         value = as.integer(value)) %>%
+         value = as.numeric(value)) %>%
   # order columns
   select(country_name,country_code,year,series_name,value) %>%
   # rename series name to variable name for clarity
@@ -275,7 +275,7 @@ pop_clean <- pop %>%
     values_to = "value") %>%
   # convert year and value to integers
   mutate(year  = as.integer(year),
-         value = as.integer(value)) %>%
+         value = as.numeric(value)) %>%
   # confirm series_name = "Population, total" for all observations
   verify(series_name == "Population, total") %>%
   # order and refine columns

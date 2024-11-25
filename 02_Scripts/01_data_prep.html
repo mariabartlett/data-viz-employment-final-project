@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sam Cohen &amp; Maria Bartlett">
-<meta name="dcterms.date" content="2024-11-23">
+<meta name="dcterms.date" content="2024-11-25">
 
 <title>PPOL 5202: Final project data wrangling</title>
 <style>
@@ -3307,7 +3307,7 @@ border: 0;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 23, 2024</p>
+      <p class="date">November 25, 2024</p>
     </div>
   </div>
   
@@ -3964,7 +3964,7 @@ border: 0;
 <span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert year and value to integers</span></span>
 <span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year  =</span> <span class="fu">as.integer</span>(year),</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>         <span class="at">value =</span> <span class="fu">as.integer</span>(value)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>         <span class="at">value =</span> <span class="fu">as.numeric</span>(value)) <span class="sc">%&gt;%</span></span>
 <span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># order columns</span></span>
 <span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(country_name,country_code,year,series_name,value) <span class="sc">%&gt;%</span></span>
 <span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># rename series name to variable name for clarity</span></span>
@@ -4005,42 +4005,42 @@ border: 0;
 <td style="text-align: left;">AFG</td>
 <td style="text-align: left;">1991</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.444</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Afghanistan</td>
 <td style="text-align: left;">AFG</td>
 <td style="text-align: left;">1992</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.434</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Afghanistan</td>
 <td style="text-align: left;">AFG</td>
 <td style="text-align: left;">1993</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.456</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Afghanistan</td>
 <td style="text-align: left;">AFG</td>
 <td style="text-align: left;">1994</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.477</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Afghanistan</td>
 <td style="text-align: left;">AFG</td>
 <td style="text-align: left;">1995</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.459</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Afghanistan</td>
 <td style="text-align: left;">AFG</td>
 <td style="text-align: left;">1996</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.436</td>
 </tr>
 </tbody>
 </table>
@@ -4083,7 +4083,7 @@ border: 0;
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert year and value to integers</span></span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year  =</span> <span class="fu">as.integer</span>(year),</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">value =</span> <span class="fu">as.integer</span>(value)) <span class="sc">%&gt;%</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">value =</span> <span class="fu">as.numeric</span>(value)) <span class="sc">%&gt;%</span></span>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># confirm series_name = &quot;Population, total&quot; for all observations</span></span>
 <span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">verify</span>(series_name <span class="sc">==</span> <span class="st">&quot;Population, total&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># order and refine columns</span></span>
@@ -4524,7 +4524,7 @@ border: 0;
 <td style="text-align: left;">2017</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">14</td>
+<td style="text-align: left;">14.020</td>
 <td style="text-align: left;">35643418</td>
 <td style="text-align: left;">13019</td>
 <td style="text-align: left;">36607</td>
@@ -4536,7 +4536,7 @@ border: 0;
 <td style="text-align: left;">2017</td>
 <td style="text-align: left;">Unemployment, male (% of male labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.365</td>
 <td style="text-align: left;">35643418</td>
 <td style="text-align: left;">13019</td>
 <td style="text-align: left;">36607</td>
@@ -4548,7 +4548,7 @@ border: 0;
 <td style="text-align: left;">2017</td>
 <td style="text-align: left;">Unemployment, total (% of total labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">11</td>
+<td style="text-align: left;">11.184</td>
 <td style="text-align: left;">35643418</td>
 <td style="text-align: left;">13019</td>
 <td style="text-align: left;">36607</td>
@@ -4560,7 +4560,7 @@ border: 0;
 <td style="text-align: left;">2017</td>
 <td style="text-align: left;">Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">21</td>
+<td style="text-align: left;">21.148</td>
 <td style="text-align: left;">35643418</td>
 <td style="text-align: left;">13019</td>
 <td style="text-align: left;">36607</td>
@@ -4572,7 +4572,7 @@ border: 0;
 <td style="text-align: left;">2017</td>
 <td style="text-align: left;">Unemployment, youth male (% of male labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">16</td>
+<td style="text-align: left;">16.037</td>
 <td style="text-align: left;">35643418</td>
 <td style="text-align: left;">13019</td>
 <td style="text-align: left;">36607</td>
@@ -4584,7 +4584,7 @@ border: 0;
 <td style="text-align: left;">2017</td>
 <td style="text-align: left;">Unemployment, youth total (% of total labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">17</td>
+<td style="text-align: left;">17.313</td>
 <td style="text-align: left;">35643418</td>
 <td style="text-align: left;">13019</td>
 <td style="text-align: left;">36607</td>
@@ -4596,7 +4596,7 @@ border: 0;
 <td style="text-align: left;">2018</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">14</td>
+<td style="text-align: left;">14.782</td>
 <td style="text-align: left;">36686784</td>
 <td style="text-align: left;">14135</td>
 <td style="text-align: left;">43264</td>
@@ -4608,7 +4608,7 @@ border: 0;
 <td style="text-align: left;">2018</td>
 <td style="text-align: left;">Unemployment, male (% of male labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.211</td>
 <td style="text-align: left;">36686784</td>
 <td style="text-align: left;">14135</td>
 <td style="text-align: left;">43264</td>
@@ -4620,7 +4620,7 @@ border: 0;
 <td style="text-align: left;">2018</td>
 <td style="text-align: left;">Unemployment, total (% of total labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">11</td>
+<td style="text-align: left;">11.206</td>
 <td style="text-align: left;">36686784</td>
 <td style="text-align: left;">14135</td>
 <td style="text-align: left;">43264</td>
@@ -4632,7 +4632,7 @@ border: 0;
 <td style="text-align: left;">2018</td>
 <td style="text-align: left;">Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">20</td>
+<td style="text-align: left;">20.732</td>
 <td style="text-align: left;">36686784</td>
 <td style="text-align: left;">14135</td>
 <td style="text-align: left;">43264</td>
@@ -4644,7 +4644,7 @@ border: 0;
 <td style="text-align: left;">2018</td>
 <td style="text-align: left;">Unemployment, youth male (% of male labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">15</td>
+<td style="text-align: left;">15.278</td>
 <td style="text-align: left;">36686784</td>
 <td style="text-align: left;">14135</td>
 <td style="text-align: left;">43264</td>
@@ -4656,7 +4656,7 @@ border: 0;
 <td style="text-align: left;">2018</td>
 <td style="text-align: left;">Unemployment, youth total (% of total labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">16</td>
+<td style="text-align: left;">16.626</td>
 <td style="text-align: left;">36686784</td>
 <td style="text-align: left;">14135</td>
 <td style="text-align: left;">43264</td>
@@ -4668,7 +4668,7 @@ border: 0;
 <td style="text-align: left;">2019</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">15</td>
+<td style="text-align: left;">15.562</td>
 <td style="text-align: left;">37769499</td>
 <td style="text-align: left;">13908</td>
 <td style="text-align: left;">41608</td>
@@ -4680,7 +4680,7 @@ border: 0;
 <td style="text-align: left;">2019</td>
 <td style="text-align: left;">Unemployment, male (% of male labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.072</td>
 <td style="text-align: left;">37769499</td>
 <td style="text-align: left;">13908</td>
 <td style="text-align: left;">41608</td>
@@ -4692,7 +4692,7 @@ border: 0;
 <td style="text-align: left;">2019</td>
 <td style="text-align: left;">Unemployment, total (% of total labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">11</td>
+<td style="text-align: left;">11.224</td>
 <td style="text-align: left;">37769499</td>
 <td style="text-align: left;">13908</td>
 <td style="text-align: left;">41608</td>
@@ -4704,7 +4704,7 @@ border: 0;
 <td style="text-align: left;">2019</td>
 <td style="text-align: left;">Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">20</td>
+<td style="text-align: left;">20.304</td>
 <td style="text-align: left;">37769499</td>
 <td style="text-align: left;">13908</td>
 <td style="text-align: left;">41608</td>
@@ -4716,7 +4716,7 @@ border: 0;
 <td style="text-align: left;">2019</td>
 <td style="text-align: left;">Unemployment, youth male (% of male labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">14</td>
+<td style="text-align: left;">14.506</td>
 <td style="text-align: left;">37769499</td>
 <td style="text-align: left;">13908</td>
 <td style="text-align: left;">41608</td>
@@ -4728,7 +4728,7 @@ border: 0;
 <td style="text-align: left;">2019</td>
 <td style="text-align: left;">Unemployment, youth total (% of total labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">15</td>
+<td style="text-align: left;">15.921</td>
 <td style="text-align: left;">37769499</td>
 <td style="text-align: left;">13908</td>
 <td style="text-align: left;">41608</td>
@@ -4740,7 +4740,7 @@ border: 0;
 <td style="text-align: left;">2020</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">16</td>
+<td style="text-align: left;">16.782</td>
 <td style="text-align: left;">38972230</td>
 <td style="text-align: left;">10339</td>
 <td style="text-align: left;">31359</td>
@@ -4752,7 +4752,7 @@ border: 0;
 <td style="text-align: left;">2020</td>
 <td style="text-align: left;">Unemployment, male (% of male labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">10</td>
+<td style="text-align: left;">10.458</td>
 <td style="text-align: left;">38972230</td>
 <td style="text-align: left;">10339</td>
 <td style="text-align: left;">31359</td>
@@ -4764,7 +4764,7 @@ border: 0;
 <td style="text-align: left;">2020</td>
 <td style="text-align: left;">Unemployment, total (% of total labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">11</td>
+<td style="text-align: left;">11.710</td>
 <td style="text-align: left;">38972230</td>
 <td style="text-align: left;">10339</td>
 <td style="text-align: left;">31359</td>
@@ -4776,7 +4776,7 @@ border: 0;
 <td style="text-align: left;">2020</td>
 <td style="text-align: left;">Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">21</td>
+<td style="text-align: left;">21.230</td>
 <td style="text-align: left;">38972230</td>
 <td style="text-align: left;">10339</td>
 <td style="text-align: left;">31359</td>
@@ -4788,7 +4788,7 @@ border: 0;
 <td style="text-align: left;">2020</td>
 <td style="text-align: left;">Unemployment, youth male (% of male labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">14</td>
+<td style="text-align: left;">14.449</td>
 <td style="text-align: left;">38972230</td>
 <td style="text-align: left;">10339</td>
 <td style="text-align: left;">31359</td>
@@ -4800,7 +4800,7 @@ border: 0;
 <td style="text-align: left;">2020</td>
 <td style="text-align: left;">Unemployment, youth total (% of total labor force ages 15-24) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">16</td>
+<td style="text-align: left;">16.051</td>
 <td style="text-align: left;">38972230</td>
 <td style="text-align: left;">10339</td>
 <td style="text-align: left;">31359</td>
@@ -4812,7 +4812,7 @@ border: 0;
 <td style="text-align: left;">2021</td>
 <td style="text-align: left;">Unemployment, female (% of female labor force) (modeled ILO estimate)</td>
 <td style="text-align: left;">AFG</td>
-<td style="text-align: left;">16</td>
+<td style="text-align: left;">16.871</td>
 <td style="text-align: left;">40099462</td>
 <td style="text-align: left;">9767</td>
 <td style="text-align: left;">42654</td>
