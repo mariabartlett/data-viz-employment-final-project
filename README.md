@@ -50,3 +50,6 @@ Jungling Shao, Katharyn Loweth, Maria Bartlett, Sam Cohen, Shun Liu, & Yuhan Ma
 
 ## Data Source References
 
+Employment by ILO sector and sex (thousands)—Annual (2000-2023). [Dataset]. International Labour Organization. https://rshiny.ilo.org/dataexplorer58/?lang=en&id=SDG_0831_SEX_ECO_RT_A
+
+
