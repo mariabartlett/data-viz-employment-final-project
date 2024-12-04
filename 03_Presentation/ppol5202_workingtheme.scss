@@ -1,0 +1,38 @@
+/*-- scss:defaults --*/
+
+
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
+
+// fonts
+$font-family-sans-serif: Lato, sans-serif !default;
+$body-font-size: 14px;
+
+// colors
+$body-bg: #3e8af3 !default;
+$body-color: #fafafa !default;
+$text-muted: $body-color !default;
+$link-color: #000080 !default;
+$selection-bg: #d33682 !default;
+$input-panel-bg: rgba(233, 236, 239, 0.2) !default;
+
+// headings and spacing
+$presentation-heading-font: "Lato", sans-serif !default;
+$presentation-heading-color: #fafafa !default;
+$body-line-height: 1.5 !default;
+
+
+
+/*-- scss:rules --*/
+
+html * {
+  color-profile: sRGB;
+  rendering-intent: auto;
+}
+
+body {
+  font-size: $body-font-size;
+}
+
+body {
+  line-height: $body-line-height;
+}
