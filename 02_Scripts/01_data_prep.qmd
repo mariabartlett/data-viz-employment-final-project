@@ -322,7 +322,7 @@ employ_by_sector <- read.csv(file.path(input,"EMP_TEMP_SEX_IND_NB_A-filtered-202
 employ_by_sector_clean <- employ_by_sector %>% 
   # apply general cleaning to column names
   clean_names() %>%
-  # data came from 66 different survey sources -- DISCUSS IN LIMITATIONS
+  # data came from 66 different survey sources
   verify(length(unique(source_label)) == 66) %>%
   # confirm variable type is always employment by sector and sex
   verify(indicator_label == "Employment by ILO sector and sex (thousands)") %>%
@@ -339,7 +339,7 @@ count(employ_by_sector_clean,industry_sector) %>%
       align = "l") %>%
   kable_styling(bootstrap_options = c("striped","hover"))
 
-# cross-tabulate obs_status vs. note_indicator_label variable    -- DISCUSS IN LIMITATIONS
+# cross-tabulate obs_status vs. note_indicator_label variable
 count(employ_by_sector_clean,obs_status_label,note_indicator_label) %>%
   kbl(full_width = T, 
       align = "l") %>%
