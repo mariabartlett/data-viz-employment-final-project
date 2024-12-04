@@ -25,11 +25,11 @@ Our study seeks to descriptively analyze the relationship between violence and e
 
 ## Processed Analytic Data
 
-| File name | Year(s) of data  | Level of file  | Data description |
+| File name | Year(s) of data  | Level of file  | Data purpose |
 | ------- | --- | --- | --- |
-| `ACLED-event-level-1997-2024.csv` | January 1, 1997 – November 20, 2024 | Incident | XXX
-| `ACLED-sector-employment-annual-2000-2023.csv` | 2000 - 2023 | Country - year - industry | XXX
-| `ACLED-unemployment-annual-1997-2023.csv` | 1997 - 2023 | Country - year - unemployment metric | XXX
+| `ACLED-event-level-1997-2024.csv` | January 1, 1997 – November 20, 2024 | Incident | Provides comprehensive ACLED incident-level data for geospatial visualization
+| `ACLED-sector-employment-annual-2000-2023.csv` | 2000 - 2023 | Country - year - industry | Provides rates of violence alongside data on sector employment
+| `ACLED-unemployment-annual-1997-2023.csv` | 1997 - 2023 | Country - year - unemployment metric | Provides rates of violence alongside data on unemployment
 
 * The processed analytic data files are available on Google Drive at [this location](https://drive.google.com/drive/folders/17mzLDUja00r7Ne5ycm5DB1MZFcrWuuEd). Because of file size, these files are not available in this GitHub repo.
 
