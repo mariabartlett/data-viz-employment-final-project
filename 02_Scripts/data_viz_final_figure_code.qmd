@@ -583,7 +583,7 @@ plot_ly() %>%
   ) %>%
   layout(
     title = list(
-      text = "Relationship between Conflicts Numbers and Unemployment Rate \nin Sub-Saharan Africa by Youth Gender",
+      text = "Relationship between Conflicts Numbers and Unemployment Rate Southern Asia by Youth Gender",
       font = list(size = 15)  
     ),
     xaxis = list(
