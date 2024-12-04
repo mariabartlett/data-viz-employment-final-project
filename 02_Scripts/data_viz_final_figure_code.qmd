@@ -267,7 +267,8 @@ plot_ly() %>%
     ),
     yaxis = list(
       title = "Unemployment Rate (%)",
-      side = "left"
+      side = "left",
+      range = c(0,20)
     ),
     yaxis2 = list(
       title = "Incidents per 100k People",
@@ -338,9 +339,9 @@ filtered_data_2 <- prepared_data_dem_2 %>%
 plot_ly() %>%
   # Add Female Unemployment Rate as a line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_2,
     x = ~year,
-    y = ~unemployment_rate_female,
+    y = ~unemployment_rate_youth_female,
     type = 'scatter',
     mode = 'lines',  # Use 'lines' mode
     name = 'Unemployment Rate (Youth Female)',
@@ -349,9 +350,9 @@ plot_ly() %>%
   ) %>%
   # Add Youth Male Unemployment Rate as a line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_2,
     x = ~year,
-    y = ~unemployment_rate_male,
+    y = ~unemployment_rate_youth_male,
     type = 'scatter',
     mode = 'lines',  
     name = 'Unemployment Rate (Youth Male)',
@@ -360,7 +361,7 @@ plot_ly() %>%
   ) %>%
   # add Youth Female Unemployment Rate As a Line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_2,
     x = ~year,
     y = ~num_incidents_per100k_people,
     type = 'scatter',
@@ -373,7 +374,7 @@ plot_ly() %>%
   ) %>%
   # Add Difference Line (Female - Male)
   add_trace(
-    data = filtered_data,
+    data = filtered_data_2,
     x = ~year,
     y = ~difference,
     type = 'scatter',
@@ -502,7 +503,8 @@ plot_ly() %>%
     ),
     yaxis = list(
       title = "Unemployment Rate (%)",
-      side = "left"
+      side = "left",
+      range = c(0,25)
     ),
     yaxis2 = list(
       title = "Incidents per 100k People",
@@ -536,9 +538,9 @@ filtered_data_2 <- prepared_data_dem_2 %>%
 plot_ly() %>%
   # Add Female Unemployment Rate as a line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_2,
     x = ~year,
-    y = ~unemployment_rate_female,
+    y = ~unemployment_rate_youth_female,
     type = 'scatter',
     mode = 'lines',  
     name = 'Unemployment Rate (Youth Female)',
@@ -547,9 +549,9 @@ plot_ly() %>%
   ) %>%
   # Add Youth Male Unemployment Rate as a line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_2,
     x = ~year,
-    y = ~unemployment_rate_male,
+    y = ~unemployment_rate_youth_male,
     type = 'scatter',
     mode = 'lines',  
     name = 'Unemployment Rate (Youth Male)',
@@ -558,7 +560,7 @@ plot_ly() %>%
   ) %>%
   # add Youth Female Unemployment Rate As a Line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_2,
     x = ~year,
     y = ~num_incidents_per100k_people,
     type = 'scatter',
@@ -571,7 +573,7 @@ plot_ly() %>%
   ) %>%
   # Add Difference Line (Female - Male)
   add_trace(
-    data = filtered_data,
+    data = filtered_data_2,
     x = ~year,
     y = ~difference,
     type = 'scatter',
@@ -583,7 +585,7 @@ plot_ly() %>%
   ) %>%
   layout(
     title = list(
-      text = "Relationship between Conflicts Numbers and Unemployment Rate Southern Asia by Youth Gender",
+      text = "Relationship between Conflicts Numbers and Unemployment Rate in Southern Asia by Youth Gender",
       font = list(size = 15)  
     ),
     xaxis = list(
