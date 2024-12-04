@@ -1,14 +1,13 @@
 ---
-title: "Data Visulizaton Final Project"
+title: "02_data_viz"
 
 editor: visual
 format: 
   html: 
     embed-resources: true
-  
 ---
 
-Conflicts often have profound social, economic, and political consequences, and understanding their distribution and trends is crucial for effective decision-making and resource allocation. The overview provides an **overview of global conflict activity and its relationship to unemployment trends**, helping us answer key questions like:
+Conflicts often have profound social, economic, and political consequences, and understanding their distribution and trends is crucial for effective decision-making and resource allocation. The overview provides an **overview of global conflict activity and its relationship to unemployment trends**, helping us answer key questions like:
 
 -   Which regions have experienced consistently high levels of conflict over time?
 
@@ -22,13 +21,10 @@ By exploring these patterns, we aim to identify focus areas for deeper analysis 
 
 The **stacked area chart** is the first step in our analysis, offering a bird's-eye view of **conflict distribution across regions over time**. It visualizes the total number of conflicts globally, broken down into regional contributions from 1990 to 2023. The chart serves as a foundation to contextualize the scale and dynamics of conflict activity.
 
-
-
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-setwd('/Users/machuichui/Desktop/2024fall/DV/final project')
 
 library(tidyverse)
 library(tidyr)
@@ -50,7 +46,6 @@ acled <- read.csv("ACLED-event-level-1997-2024.csv") # ACLED
 region_code = read.xlsx('sub_region_code.xlsx')
 ```
 
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -63,8 +58,6 @@ unemp_sect <- unemp_sect %>%
   left_join(region_code %>% select(country_code, sub_region_name), by = "country_code") %>%
   rename(sub_region = sub_region_name) # Rename column if needed
 ```
-
-
 
 ```{r}
 #| echo: false
@@ -131,10 +124,6 @@ interactive_plot
 
 From the previous analysis, we have decided to focus on **Sub-Saharan Africa** and **Southern Asia**. In this section, we will delve deeper into how conflicts impact unemployment across different gender and youth groups in these two areas.
 
-
-
-
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -188,7 +177,6 @@ Unemployment Dynamics:
 -   The red dashed line illustrates the gender-based unemployment disparity. Females consistently experienced higher unemployment rates compared to males
 
 -   The unemployment rate gap fluctuates without a clear systematic pattern
-
 
 ```{r}
 #| echo: false
@@ -284,9 +272,6 @@ plot_ly() %>%
 
 
 ```
-
-
-
 
 ```{r}
 #| echo: false
@@ -615,6 +600,7 @@ plot_ly() %>%
       xanchor = "left"
     )
   )
+
 ```
 
 An interesting difference in their impacts lies in the timing of the peaks in unemployment relative to the peak of conflicts. In Southern Asia, unemployment rates peak after the peak in conflicts, suggesting a delayed effect. Conversely, Sub-Saharan Africa, unemployment peaks immediately after the peak in conflicts, indicating a more immediate impact.
@@ -648,8 +634,6 @@ filtered_data_sec_1 <- unemp_sect %>%
     .groups = "drop"  
   )
 
-
-
 ```
 
 ```{r}
@@ -665,10 +649,6 @@ sector_correlation <- filtered_data_sec_1 %>%
     ),
     .groups = "drop"
   )
-
-
-
-
 
 ```
 
@@ -704,9 +684,7 @@ ggplot(sector_correlation, aes(x = reorder(industry_sector, correlation), y = co
 
 ```
 
-With the animated buble chart, we can observe that from 2011-2015, the employment increase rate in basic metal production jumped out.However, with the increasing conflicts after 2016, the oil,gas industry were hiring more and more people.
-
-
+With the animated bubble chart, we can observe that from 2011-2015, the employment increase rate in basic metal production jumped out. However, with the increasing conflicts after 2016, the oil,gas industry were hiring more and more people.
 
 ```{r}
 #| echo: false
@@ -763,7 +741,6 @@ fig <- plot_ly(
 # Display the figure
 fig
 ```
-
 
 ```{r}
 #| echo: false
@@ -827,10 +804,6 @@ ggplot(sector_correlation_sa, aes(x = reorder(industry_sector, correlation), y =
 
 From the bubble chart, we can observe an employment increase in the construction industry before 2015. However, after 2015, with the rise in conflicts, few industries demonstrated strong performance in employment increase rates.
 
-
-
-
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -886,4 +859,3 @@ fig <- plot_ly(
 # Display the figure
 fig
 ```
-
