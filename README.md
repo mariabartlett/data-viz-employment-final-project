@@ -4,13 +4,14 @@
 
 ## Description
 
-Our study ...
+Our study seeks to descriptively analyze the relationship between violence and employment around the world. 
 
 ## Research Questions
 
-1.	
-2.	
-
+1. How does the relationship between conflict and employment vary across different global regions? 
+2. Does employment in certain industries have a positive / negative correlation with conflict?
+3. What are the effects of conflict on unemployment across demographics groups? 
+	
 ## Input Data
 
 | Data source | File name | Year(s) of data  | Level of file  | Key variables(s) |
