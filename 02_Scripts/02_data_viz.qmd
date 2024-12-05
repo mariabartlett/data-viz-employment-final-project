@@ -1,13 +1,13 @@
 ---
-title: "02_data_viz"
-
+title: "Data Visulizaton Final Project"
+author: Junling Shao, Yuhan Ma
 editor: visual
 format: 
   html: 
     embed-resources: true
 ---
 
-Conflicts often have profound social, economic, and political consequences, and understanding their distribution and trends is crucial for effective decision-making and resource allocation. The overview provides an **overview of global conflict activity and its relationship to unemployment trends**, helping us answer key questions like:
+Conflicts often have profound social, economic, and political consequences, and understanding their distribution and trends is crucial for effective decision-making and resource allocation. The overview provides an **overview of global conflict activity and its relationship to unemployment trends**, helping us answer key questions like:
 
 -   Which regions have experienced consistently high levels of conflict over time?
 
@@ -25,6 +25,7 @@ The **stacked area chart** is the first step in our analysis, offering a bird's-
 #| echo: false
 #| warning: false
 #| message: false
+setwd('/Users/machuichui/Desktop/2024fall/DV/final project')
 
 library(tidyverse)
 library(tidyr)
@@ -120,15 +121,15 @@ interactive_plot
 
 [Click here to open the Shiny App](https://js5241.shinyapps.io/viz_final/)
 
-## Part3. Impact of Conflicts on unemployment By Demographic in Selected Regions
+## Part3. Relationship between Conflicts and unemployment Rate By Demographic in Selected Regions
 
 From the previous analysis, we have decided to focus on **Sub-Saharan Africa** and **Southern Asia**. In this section, we will delve deeper into how conflicts impact unemployment across different gender and youth groups in these two areas.
 
 ```{r}
 #| echo: false
 #| warning: false
-
-prepared_data_dem_1 <- unemp_dem %>%
+# create the dataset that only have the unemployment for female and male by sub region.
+prepared_data_dem_gender <- unemp_dem %>%
   filter(
     unemployment_metric %in% c(
       "Unemployment, female (% of female labor force) (modeled ILO estimate)",
@@ -162,6 +163,8 @@ prepared_data_dem_1 <- unemp_dem %>%
 
 ### Sub-Saharan Africa
 
+This dataset for this part was prepared by first filtering the raw data to include only metrics related to unemployment rates for females and males as a percentage of their respective labor forces (modeled ILO estimates). After filtering, the data was grouped by year, sub-region, and unemployment metric. Within each group, the unemployment values and the number of incidents per 100,000 people were aggregated by calculating their mean, excluding missing values. The dataset was then pivoted to create separate columns for female and male unemployment rates, which were appropriately renamed for clarity. Finally, the dataset was organized to retain only the year, sub-region, female unemployment rate, male unemployment rate, and the number of incidents per 100,000 people. Same as the dataset for Southern Asia.
+
 The figure analyzes the relationship between conflicts and unemployment across gender groups in Sub-Saharan Africa. Key observations include：
 
 Conflict Intensity:
@@ -183,69 +186,69 @@ Unemployment Dynamics:
 #| warning: false
 
 # Filter the data for Sub-Saharan Africa and calculate Female - Male difference
-filtered_data <- prepared_data_dem_1 %>%
+filtered_data_dem_gender_subshr <- prepared_data_dem_gender %>%
   filter(sub_region == "Sub-Saharan Africa") %>%
-  mutate(difference = unemployment_rate_female - unemployment_rate_male)  # Calculate Female - Male
+  mutate(difference = unemployment_rate_female - unemployment_rate_male)  
 
-# Create the plot with two lines for unemployment rates and an area for incidents
+
 plot_ly() %>%
   # Add Female Unemployment Rate as a line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_dem_gender_subshr,
     x = ~year,
     y = ~unemployment_rate_female,
     type = 'scatter',
     mode = 'lines',  # Use 'lines' mode
     name = 'Unemployment Rate (Female)',
-    hoverinfo = 'x+y+name',
-    line = list(shape = 'spline')  
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',  
+    line = list(shape = 'spline')
   ) %>%
   # Add Male Unemployment Rate as a line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_dem_gender_subshr,
     x = ~year,
     y = ~unemployment_rate_male,
     type = 'scatter',
-    mode = 'lines',  
+    mode = 'lines',
     name = 'Unemployment Rate (Male)',
-    hoverinfo = 'x+y+name',
-    line = list(shape = 'spline')  # Smooth curve
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',  
+    line = list(shape = 'spline')
   ) %>%
-  
+  # Add Incidents per 100k People
   add_trace(
-    data = filtered_data,
+    data = filtered_data_dem_gender_subshr,
     x = ~year,
     y = ~num_incidents_per100k_people,
     type = 'scatter',
-    mode = 'lines',  
-    fill = 'tozeroy',  
+    mode = 'lines',
+    fill = 'tozeroy',
     name = 'Incidents per 100k People',
-    hoverinfo = 'x+y+name',
-    line = list(shape = 'spline'),  
-    yaxis = 'y2'  # Assign to secondary y-axis
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',   
+    line = list(shape = 'spline'),
+    yaxis = 'y2'
   ) %>%
   # Add Difference Line (Female - Male)
   add_trace(
-    data = filtered_data,
+    data = filtered_data_dem_gender_subshr,
     x = ~year,
     y = ~difference,
     type = 'scatter',
-    mode = 'lines',  
+    mode = 'lines',
     name = 'Difference (Female - Male)',
-    hoverinfo = 'x+y+name',
-    line = list(shape = 'spline', dash = 'dot'),  
-    yaxis = 'y'  # Assign to primary y-axis
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',  
+    line = list(shape = 'spline', dash = 'dot'),
+    yaxis = 'y'
   ) %>%
   layout(
     title = list(
       text = "Relationship between Conflicts Numbers and Unemployment Rate \nin Sub-Saharan Africa by Gender",
-      font = list(size = 15)  # Adjust the font size here
+      font = list(size = 15)
     ),
     xaxis = list(
       title = "Year",
-      tickangle = 45,  
-      rangeslider = list(visible = TRUE),  
-      rangeselector = list(  
+      tickangle = 45,
+      rangeslider = list(visible = TRUE),
+      rangeselector = list(
         buttons = list(
           list(count = 5, label = "Last 5 Years", step = "year", stepmode = "backward"),
           list(count = 10, label = "Last 10 Years", step = "year", stepmode = "backward"),
@@ -256,16 +259,16 @@ plot_ly() %>%
     yaxis = list(
       title = "Unemployment Rate (%)",
       side = "left",
-      range = c(0,20)
+      range = c(0, 20)
     ),
     yaxis2 = list(
       title = "Incidents per 100k People",
-      overlaying = "y",  
+      overlaying = "y",
       side = "right"
     ),
     legend = list(
-      x = 1.15,  
-      y = 1,  
+      x = 1.15,
+      y = 1,
       xanchor = "left"
     )
   )
@@ -277,7 +280,7 @@ plot_ly() %>%
 #| echo: false
 #| warning: false
 
-prepared_data_dem_2 <- unemp_dem %>%
+prepared_data_dem_youth <- unemp_dem %>%
   filter(
     unemployment_metric %in% c(
       "Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate)",
@@ -316,7 +319,7 @@ The chart examines youth employment dynamics in Sub-Saharan Africa during period
 #| warning: false
 
 # Filter the data for Sub-Saharan Africa and calculate Female - Male difference
-filtered_data_2 <- prepared_data_dem_2 %>%
+filtered_data_dem_youth_subshr <- prepared_data_dem_youth %>%
   filter(sub_region == "Sub-Saharan Africa") %>%
   mutate(difference = unemployment_rate_youth_female - unemployment_rate_youth_male)  
 
@@ -324,48 +327,48 @@ filtered_data_2 <- prepared_data_dem_2 %>%
 plot_ly() %>%
   # Add Female Unemployment Rate as a line
   add_trace(
-    data = filtered_data_2,
+    data = filtered_data_dem_youth_subshr ,
     x = ~year,
     y = ~unemployment_rate_youth_female,
     type = 'scatter',
     mode = 'lines',  # Use 'lines' mode
     name = 'Unemployment Rate (Youth Female)',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline')  # Smooth curve
   ) %>%
   # Add Youth Male Unemployment Rate as a line
   add_trace(
-    data = filtered_data_2,
+    data = filtered_data_dem_youth_subshr,
     x = ~year,
     y = ~unemployment_rate_youth_male,
     type = 'scatter',
     mode = 'lines',  
     name = 'Unemployment Rate (Youth Male)',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline') 
   ) %>%
   # add Youth Female Unemployment Rate As a Line
   add_trace(
-    data = filtered_data_2,
+    data = filtered_data_dem_youth_subshr ,
     x = ~year,
     y = ~num_incidents_per100k_people,
     type = 'scatter',
     mode = 'lines',  
     fill = 'tozeroy',  
     name = 'Incidents per 100k People',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline'),  
     yaxis = 'y2'  
   ) %>%
   # Add Difference Line (Female - Male)
   add_trace(
-    data = filtered_data_2,
+    data = filtered_data_dem_youth_subshr,
     x = ~year,
     y = ~difference,
     type = 'scatter',
     mode = 'lines',  
     name = 'Difference (Youth Female - Youth Male)',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline', dash = 'dot'),  
     yaxis = 'y' 
   ) %>%
@@ -417,55 +420,55 @@ The chart provides insights into the impact of conflicts on employment in Southe
 #| warning: false
 
 # Filter the data for Southern Asia and calculate Female - Male difference
-filtered_data <- prepared_data_dem_1 %>%
+filtered_data_dem_gender_sa <- prepared_data_dem_gender %>%
   filter(sub_region == "Southern Asia") %>%
   mutate(difference = unemployment_rate_female - unemployment_rate_male)  
 
 plot_ly() %>%
   # Add Female Unemployment Rate as a line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_dem_gender_sa,
     x = ~year,
     y = ~unemployment_rate_female,
     type = 'scatter',
     mode = 'lines',  # Use 'lines' mode
     name = 'Unemployment Rate (Female)',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline')  
   ) %>%
   # Add Male Unemployment Rate as a line
   add_trace(
-    data = filtered_data,
+    data = filtered_data_dem_gender_sa,
     x = ~year,
     y = ~unemployment_rate_male,
     type = 'scatter',
     mode = 'lines',  
     name = 'Unemployment Rate (Male)',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline')  
   ) %>%
   
   add_trace(
-    data = filtered_data,
+    data = filtered_data_dem_gender_sa,
     x = ~year,
     y = ~num_incidents_per100k_people,
     type = 'scatter',
     mode = 'lines',  
     fill = 'tozeroy', 
     name = 'Incidents per 100k People',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline'), 
     yaxis = 'y2'  
   ) %>%
   # Add Difference Line (Female - Male)
   add_trace(
-    data = filtered_data,
+    data = filtered_data_dem_gender_sa,
     x = ~year,
     y = ~difference,
     type = 'scatter',
     mode = 'lines', 
     name = 'Difference (Female - Male)',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline', dash = 'dot'),  
     yaxis = 'y'  
   ) %>%
@@ -489,7 +492,7 @@ plot_ly() %>%
     yaxis = list(
       title = "Unemployment Rate (%)",
       side = "left",
-      range = c(0,25)
+      range = c(0, 25) 
     ),
     yaxis2 = list(
       title = "Incidents per 100k People",
@@ -516,36 +519,36 @@ The impact on youth group in Southern Asia has
 #| warning: false
 #| echo: false
 # Filter the data for Southern Asia and calculate Female - Male difference
-filtered_data_2 <- prepared_data_dem_2 %>%
+filtered_data_dem_youth_sa <- prepared_data_dem_youth %>%
   filter(sub_region == "Southern Asia") %>%
   mutate(difference = unemployment_rate_youth_female - unemployment_rate_youth_male) 
 
 plot_ly() %>%
   # Add Female Unemployment Rate as a line
   add_trace(
-    data = filtered_data_2,
+    data = filtered_data_dem_youth_sa,
     x = ~year,
     y = ~unemployment_rate_youth_female,
     type = 'scatter',
     mode = 'lines',  
     name = 'Unemployment Rate (Youth Female)',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline')  
   ) %>%
   # Add Youth Male Unemployment Rate as a line
   add_trace(
-    data = filtered_data_2,
+    data = filtered_data_dem_youth_sa,
     x = ~year,
     y = ~unemployment_rate_youth_male,
     type = 'scatter',
     mode = 'lines',  
     name = 'Unemployment Rate (Youth Male)',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline')  
   ) %>%
   # add Youth Female Unemployment Rate As a Line
   add_trace(
-    data = filtered_data_2,
+    data = filtered_data_dem_youth_sa,
     x = ~year,
     y = ~num_incidents_per100k_people,
     type = 'scatter',
@@ -558,13 +561,13 @@ plot_ly() %>%
   ) %>%
   # Add Difference Line (Female - Male)
   add_trace(
-    data = filtered_data_2,
+    data = filtered_data_dem_youth_sa,
     x = ~year,
     y = ~difference,
     type = 'scatter',
     mode = 'lines',  
     name = 'Difference (Youth Female - Youth Male)',
-    hoverinfo = 'x+y+name',
+    hovertemplate = 'Year: %{x}<br>Rate: %{y:.2f}<extra></extra>',
     line = list(shape = 'spline', dash = 'dot'),  
     yaxis = 'y' 
   ) %>%
@@ -600,14 +603,21 @@ plot_ly() %>%
       xanchor = "left"
     )
   )
-
 ```
 
 An interesting difference in their impacts lies in the timing of the peaks in unemployment relative to the peak of conflicts. In Southern Asia, unemployment rates peak after the peak in conflicts, suggesting a delayed effect. Conversely, Sub-Saharan Africa, unemployment peaks immediately after the peak in conflicts, indicating a more immediate impact.
 
-## Part 4: Impact of Conflicts on Employment By Sector in Selected Regions
+## Part 4: Relationship between Conflicts and Employment Increase Rate By Sector in Selected Regions
 
-In this section, we continue exploring the impact of conflicts on employment in Sub-Saharan Africa and Southern Asia. The dataset provides the percentage of the total population employed in each sector, using whole population in nation as denominator, which may not reflect sector-specific employment demand. To address this, we calculated the **employment increase rate** as a more reasonable index.
+In this section, we continue exploring the impact of conflicts on employment in Sub-Saharan Africa and Southern Asia. The dataset provides the percentage of the total population employed in each sector, using whole population in nation as denominator, which may not reflect sector-specific employment demand. To address this, we calculated the **employment increase rate** as a more reasonable index. 
+
+
+We calculates the employment increase rate by grouping the data by country_name and industry_sector, and then computing the year-over-year percentage change in the proportion of the population employed in each sector,simply:
+$$
+\text{Employment Increase Rate} = \frac{\text{Current Year's Percentage} - \text{Previous Year's Percentage}}{\text{Previous Year's Percentage}}
+$$
+Afterward, we filters the data for the "Sub-Saharan Africa" region and aggregates it further by year, sub_region, and industry_sector. For each group, it calculates the average employment increase rate and the average number of incidents per 100,000 people.
+
 
 ```{r}
 #| echo: false
@@ -625,7 +635,7 @@ unemp_sect <- unemp_sect %>%
   ungroup()  
 
 
-filtered_data_sec_1 <- unemp_sect %>%
+filtered_data_sec_subshr <- unemp_sect %>%
   filter(sub_region == "Sub-Saharan Africa") %>%  
   group_by(year, sub_region, industry_sector) %>%
   summarise(
@@ -634,32 +644,46 @@ filtered_data_sec_1 <- unemp_sect %>%
     .groups = "drop"  
   )
 
+
+
 ```
 
 ```{r}
 #| warning: false
 #| echo: false
-sector_correlation <- filtered_data_sec_1 %>%
+sector_correlation_subshr <- filtered_data_sec_subshr %>%
+  filter(
+    !is.na(employment_increase_rate) & 
+    !is.na(num_incidents_per100k_people)
+  ) %>%  # Drop rows with NA in the relevant columns
   group_by(industry_sector) %>%
+  filter(n() >= 2) %>% 
   summarise(
     correlation = cor(
       employment_increase_rate, 
       num_incidents_per100k_people, 
-      use = "complete.obs"  
+      use = "complete.obs"  # Ensures only complete pairs are used
     ),
     .groups = "drop"
   )
 
+
+
+
+
 ```
+
+
 
 ### Sub-Saharan Africa
 
-This bar chart highlights the correlation between incidents and the employment increase rate across various industry sectors in Sub-Saharan Africa. Positive correlations are observed in sectors like "Oil and gas production, oil refining" and "Shipping, ports, fisheries, inland waterways," indicating that conflict-related incidents may coincide with increases in employment in these areas. Conversely, negative correlations are found in sectors such as "Public service" and "Forestry, wood, pulp, and paper," suggesting that these industries might experience reduced employment growth in the context of conflicts.
+
+This bar chart highlights the correlation between incidents and the employment increase rate across various industry sectors in Sub-Saharan Africa. Positive correlations are observed in sectors like "Shipping, ports, fisheries, inland waterways," indicating that conflict-related incidents may coincide with increases in employment in these areas. Conversely, negative correlations are found in sectors such as "Public service" and "Forestry, wood, pulp, and paper," suggesting that these industries might experience reduced employment growth in the context of conflicts.
 
 ```{r}
 #| warning: false
 #| echo: false
-ggplot(sector_correlation, aes(x = reorder(industry_sector, correlation), y = correlation, fill = correlation)) + 
+ggplot(sector_correlation_subshr, aes(x = reorder(industry_sector, correlation), y = correlation, fill = correlation)) + 
   geom_bar(stat = "identity") + 
   coord_flip() +  
   scale_fill_gradient2(
@@ -684,21 +708,21 @@ ggplot(sector_correlation, aes(x = reorder(industry_sector, correlation), y = co
 
 ```
 
-With the animated bubble chart, we can observe that from 2011-2015, the employment increase rate in basic metal production jumped out. However, with the increasing conflicts after 2016, the oil,gas industry were hiring more and more people.
+With the animated buble chart, we can observe that from 2011-2015, the employment increase rate in basic metal production jumped out.However, with the increasing conflicts after 2016, the oil,gas industry were hiring more and more people.
 
 ```{r}
 #| echo: false
 #| warning: false
-filtered_data_sec_1 <- filtered_data_sec_1 %>%
+filtered_data_sec_subshr <- filtered_data_sec_subshr %>%
   filter(industry_sector != "Not elsewhere classified")
 
 # Generate a color palette using viridis
-unique_sectors <- unique(filtered_data_sec_1$industry_sector)
+unique_sectors <- unique(filtered_data_sec_subshr$industry_sector)
 num_sectors <- length(unique_sectors)
 sector_colors <- viridis(num_sectors, option = "D")
 
 fig <- plot_ly(
-  data = filtered_data_sec_1,
+  data = filtered_data_sec_subshr,
   x = ~num_incidents_per100k_people,
   y = ~employment_increase_rate,
   size = ~employment_increase_rate,
@@ -738,14 +762,16 @@ fig <- plot_ly(
     )
   )
 
-# Display the figure
+
 fig
 ```
+
+
 
 ```{r}
 #| echo: false
 #| warning: false
-filtered_data_sec_2 <- unemp_sect %>%
+filtered_data_sec_sa <- unemp_sect %>%
   filter(sub_region == "Southern Asia") %>%   
   group_by(year, sub_region, industry_sector) %>%
   summarise(
@@ -760,7 +786,7 @@ filtered_data_sec_2 <- unemp_sect %>%
 ```{r}
 #| echo: false
 #| warning: false
-sector_correlation_sa <- filtered_data_sec_2 %>%
+sector_correlation_sa <- filtered_data_sec_sa %>%
   group_by(industry_sector) %>%
   summarise(
     correlation = cor(
@@ -776,6 +802,8 @@ sector_correlation_sa <- filtered_data_sec_2 %>%
 
 ### Southern Asia
 
+The employment increase rate and data aggregation methods are the same as those used for the Sub-Saharan Africa region.
+
 This chart presents the correlation between conflict incidents and the employment increase rate across industry sectors in Southern Asia. Positive correlations in sectors like "Oil and gas production, oil refining" and "Health services" suggest that these industries experience employment growth during periods of higher conflict. Conversely, negative correlations, notably in "Transport equipment manufacturing" and "Forestry, wood, pulp, and paper," indicate that employment in these sectors tends to decline as conflict incidents increase. And compared with Sub-Saharan Africa, conflicts seemed to bring more negative impact on employment in Southern Asia.
 
 ```{r}
@@ -783,7 +811,7 @@ This chart presents the correlation between conflict incidents and the employmen
 #| warning: false
 ggplot(sector_correlation_sa, aes(x = reorder(industry_sector, correlation), y = correlation, fill = correlation)) +
   geom_bar(stat = "identity") +
-  coord_flip() +  # Flip axes for better readability
+  coord_flip() +  
   scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
   labs(
     title = "Correlation Between Incidentsand Employment \nIncrease Rate by Sector in Southern Asia",
@@ -807,16 +835,16 @@ From the bubble chart, we can observe an employment increase in the construction
 ```{r}
 #| echo: false
 #| warning: false
-filtered_data_sec_2 <- filtered_data_sec_2 %>%
+filtered_data_sec_sa <- filtered_data_sec_sa %>%
   filter(industry_sector != "Not elsewhere classified")
 
 # Generate a color palette using viridis
-unique_sectors <- unique(filtered_data_sec_2$industry_sector)
+unique_sectors <- unique(filtered_data_sec_sa$industry_sector)
 num_sectors <- length(unique_sectors)
 sector_colors <- viridis(num_sectors, option = "D")
 
 fig <- plot_ly(
-  data = filtered_data_sec_2,
+  data = filtered_data_sec_sa,
   x = ~num_incidents_per100k_people,
   y = ~employment_increase_rate,
   size = ~employment_increase_rate,
@@ -846,7 +874,7 @@ fig <- plot_ly(
         x = -0.2,  
         y = 1,  
         buttons = list(
-          list(  # Custom pause button
+          list(  
             label = "Pause",
             method = "animate",
             args = list(NULL, list(frame = list(duration = 0, redraw = FALSE), mode = "immediate"))
