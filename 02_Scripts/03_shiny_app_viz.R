@@ -68,6 +68,16 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
+  # Title helper function
+  get_friendly_title <- function(data_type, sub_region, year) {
+    type_label <- switch(data_type,
+                         unemployment_value = "Unemployment",
+                         num_incidents_per100k_people = "Incidents",
+                         num_deaths_per100k_people = "Deaths"
+    )
+    return(paste("Heatmap of", type_label, "in", sub_region, "for", year))
+  }
+  
   output$heatmap <- renderPlotly({
     # Filter data by sub-region, year, and selected data type
     filtered_data <- merged_data %>%
@@ -95,9 +105,9 @@ server <- function(input, output) {
       scale_fill_viridis_c(option = "C", na.value = "grey50") +
       theme_minimal() +
       labs(
-        title = paste("Heatmap for", input$sub_region, "in", input$year,":", input$data_type),
+        title = get_friendly_title(input$data_type, input$sub_region, input$year),
         fill = "Value"
-      ) +
+      )+
       theme(
         axis.text = element_blank(),
         axis.ticks = element_blank(),
