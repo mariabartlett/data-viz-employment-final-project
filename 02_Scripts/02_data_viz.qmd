@@ -17,15 +17,14 @@ Conflicts often have profound social, economic, and political consequences, and 
 
 By exploring these patterns, we aim to identify focus areas for deeper analysis and intervention.
 
-## Part 1: Stacked Area Chart
+## Part 1: Stacked Bar Chart
 
-The **stacked area chart** is the first step in our analysis, offering a bird's-eye view of **conflict distribution across regions over time**. It visualizes the total number of conflicts globally, broken down into regional contributions from 1990 to 2023. The chart serves as a foundation to contextualize the scale and dynamics of conflict activity.
+The **stacked bar chart** is the first step in our analysis, offering a bird's-eye view of **conflict distribution across regions over time**. It visualizes the total number of conflicts globally, broken down into regional contributions from 1990 to 2023. The chart serves as a foundation to contextualize the scale and dynamics of conflict activity.
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-setwd('/Users/machuichui/Desktop/2024fall/DV/final project')
 
 library(tidyverse)
 library(tidyr)
@@ -609,15 +608,11 @@ An interesting difference in their impacts lies in the timing of the peaks in un
 
 ## Part 4: Relationship between Conflicts and Employment Increase Rate By Sector in Selected Regions
 
-In this section, we continue exploring the impact of conflicts on employment in Sub-Saharan Africa and Southern Asia. The dataset provides the percentage of the total population employed in each sector, using whole population in nation as denominator, which may not reflect sector-specific employment demand. To address this, we calculated the **employment increase rate** as a more reasonable index. 
+In this section, we continue exploring the impact of conflicts on employment in Sub-Saharan Africa and Southern Asia. The dataset provides the percentage of the total population employed in each sector, using whole population in nation as denominator, which may not reflect sector-specific employment demand. To address this, we calculated the **employment increase rate** as a more reasonable index.
 
-
-We calculates the employment increase rate by grouping the data by country_name and industry_sector, and then computing the year-over-year percentage change in the proportion of the population employed in each sector,simply:
-$$
+We calculates the employment increase rate by grouping the data by country_name and industry_sector, and then computing the year-over-year percentage change in the proportion of the population employed in each sector,simply: $$
 \text{Employment Increase Rate} = \frac{\text{Current Year's Percentage} - \text{Previous Year's Percentage}}{\text{Previous Year's Percentage}}
-$$
-Afterward, we filters the data for the "Sub-Saharan Africa" region and aggregates it further by year, sub_region, and industry_sector. For each group, it calculates the average employment increase rate and the average number of incidents per 100,000 people.
-
+$$ Afterward, we filters the data for the "Sub-Saharan Africa" region and aggregates it further by year, sub_region, and industry_sector. For each group, it calculates the average employment increase rate and the average number of incidents per 100,000 people.
 
 ```{r}
 #| echo: false
@@ -673,10 +668,7 @@ sector_correlation_subshr <- filtered_data_sec_subshr %>%
 
 ```
 
-
-
 ### Sub-Saharan Africa
-
 
 This bar chart highlights the correlation between incidents and the employment increase rate across various industry sectors in Sub-Saharan Africa. Positive correlations are observed in sectors like "Shipping, ports, fisheries, inland waterways," indicating that conflict-related incidents may coincide with increases in employment in these areas. Conversely, negative correlations are found in sectors such as "Public service" and "Forestry, wood, pulp, and paper," suggesting that these industries might experience reduced employment growth in the context of conflicts.
 
@@ -765,8 +757,6 @@ fig <- plot_ly(
 
 fig
 ```
-
-
 
 ```{r}
 #| echo: false
