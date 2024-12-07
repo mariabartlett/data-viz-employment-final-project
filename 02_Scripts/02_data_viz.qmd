@@ -412,7 +412,8 @@ plot_ly() %>%
     ),
     yaxis = list(
       title = "Unemployment Rate (%)",
-      side = "left"
+      side = "left",
+      range = c(0, 20)
     ),
     yaxis2 = list(
       title = "Incidents per 100k People",
@@ -611,7 +612,8 @@ plot_ly() %>%
     ),
     yaxis = list(
       title = "Unemployment Rate (%)",
-      side = "left"
+      side = "left",
+      range = c(0, 25)
     ),
     yaxis2 = list(
       title = "Incidents per 100k People",
