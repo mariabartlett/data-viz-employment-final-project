@@ -35,7 +35,7 @@ Our study seeks to descriptively analyze the relationship between violence and e
 
 ## Code & Output
 
-All code is available in `02_Scripts`. A description of the purpose and output produced by each script follows below:
+All code is available in `02_Scripts`. A description of the purpose and output produced by each script follows below. The `01_data_prep.qmd` must be run before `02_data_viz.qmd` and `03_shiny_viz.qmd`. However, `02_data_viz.qmd` and `03_shiny_viz.qmd` are independent of each other and can be run in either order.
 
 | Script | Purpose | Input file(s) | Output file(s)
 | ------- | --- | --- | --- |
