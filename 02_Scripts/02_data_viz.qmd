@@ -9,11 +9,11 @@ format:
 
 Conflicts often have profound social, economic, and political consequences, and understanding their distribution and trends is crucial for effective decision-making and resource allocation. The document provides an **overview of global conflict activity and its relationship to unemployment trends**, helping us answer key questions like:
 
--   Which regions have experienced consistently high levels of conflict over time?
+- How does the relationship between conflict and employment vary across different global regions?
 
--   How has the distribution of conflict evolved from 1990 to 2023?
+- Does employment in certain industries have a positive / negative correlation with conflict?
 
--   Are there emerging regions that require more attention due to rising conflict trends?
+- How does unemployment vary across demographic groups during times of conflict?
 
 By exploring these patterns, we aim to identify focus areas for deeper analysis and intervention.
 
@@ -432,7 +432,7 @@ plot_ly() %>%
 
 The chart provides insights into the impact of conflicts on employment in Southern Asia. It shows that
 
--   conflict intensity, as measured by incidents per 100,000 people, has increased significantly since the early 2000s, peaking around 2015-2020.
+-   Conflict intensity, as measured by incidents per 100,000 people, has increased significantly since the early 2000s, peaking around 2015-2020.
 
 -   The data also reveals persistent gender disparities in unemployment rates, with females consistently experiencing higher unemployment compared to males. Importantly, the analysis notes that the gender gap in unemployment is even more pronounced after the peak of conflicts
 
@@ -636,7 +636,7 @@ In this section, we continue exploring the impact of conflicts on employment in 
 
 The original data was at the **year - country - industry** level. The dataset provides the percentage of the total population employed in each sector, using whole population in nation as denominator, which may not reflect sector-specific employment demand. To address this, we calculated the **employment increase rate** as a more reasonable index.
 
-We calculates the employment increase rate by grouping the data by country and sector and then computing the year-over-year percentage change in the proportion of the population employed in each sector, simply: $$
+We calculated the employment increase rate by grouping the data by country and sector and then computing the year-over-year percentage change in the proportion of the population employed in each sector, simply: $$
 \text{Employment Increase Rate} = \frac{\text{Current Year's Percentage} - \text{Previous Year's Percentage}}{\text{Previous Year's Percentage}}$$ 
 We then grouped the data to the **year - subregion - industry** level and created the average sector employment increase rate as the mean of the employment sector increase rate across all country-year combinations reporting any employment in that sector for the given sub-region. Similarly, we calculated the average incidents per 100,000 people as the average incidents per 100K people across all country-year combinations reporting any employment in that sector for the given sub-region. In all calculations, missing values were excluded. 
 
