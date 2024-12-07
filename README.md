@@ -41,7 +41,7 @@ All code is available in `02_Scripts`. A description of the purpose and output p
 | ------- | --- | --- | --- |
 | `01_data_prep.qmd` | Perform data cleaning, variable constructions, and validation on BEA data | Raw ACLED (`1997-01-01-2024-11-20.csv`), ILO (`EMP_TEMP_SEX_IND_NB_A-filtered-2024-11-23.csv`), and World Bank data (`wb_wdi_pop.csv`; `wb_wdi_unemp.csv`)  | Analytic files (`ACLED-event-level-1997-2024.csv`; `ACLED-sector-employment-annual-2000-2023.csv`; `ACLED-unemployment-annual-1997-2023.csv`) |
 | `02_data_viz.qmd` | Create data visualizations with `ggplot2` and `plot_ly` to be rendered in Quarto | `ACLED-event-level-1997-2024.csv`; `ACLED-sector-employment-annual-2000-2023.csv`; `ACLED-unemployment-annual-1997-2023.csv` | N/A
-| `03_shiny_viz.qmd` | Create Shiny dashboard | `ACLED-event-level-1997-2024.csv`; `ACLED-sector-employment-annual-2000-2023.csv`; `ACLED-unemployment-annual-1997-2023.csv` | `https://js5241.shinyapps.io/viz_final/`
+| `03_shiny_viz.qmd` | Create Shiny dashboard | `ACLED-event-level-1997-2024.csv`; `ACLED-sector-employment-annual-2000-2023.csv`; `ACLED-unemployment-annual-1997-2023.csv` | [Shiny dashboard](https://js5241.shinyapps.io/viz_final/)
 
 ## Presentation & Report
 
