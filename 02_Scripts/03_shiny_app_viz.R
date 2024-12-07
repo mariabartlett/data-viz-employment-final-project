@@ -79,6 +79,17 @@ server <- function(input, output) {
   }
   
   output$heatmap <- renderPlotly({
+    # Define descriptive labels for each data type
+    data_type_labels <- list(
+      unemployment_value = "Avg. Unemployment Rate (%)",
+      num_incidents_per100k_people = "Avg. Incidents per 100k",
+      num_deaths_per100k_people = "Avg. Deaths per 100k"
+    )
+    
+    # Get the descriptive label based on the selected data type
+    legend_label <- data_type_labels[[input$data_type]] %||% "Value" # Default to "Value" if no match
+    tooltip_label <- legend_label # Use the same label for the tooltip
+    
     # Filter data by sub-region, year, and selected data type
     filtered_data <- merged_data %>%
       filter(
@@ -100,23 +111,25 @@ server <- function(input, output) {
       geom_sf(aes(
         fill = avg_value,
         text = paste("Country:", ADMIN,
-                     "<br>Avg Value:", round(avg_value, 2))
+                     "<br>", tooltip_label, ":", round(avg_value, 2))
       ), color = "white", lwd = 0.2) +
       scale_fill_viridis_c(option = "C", na.value = "grey50") +
       theme_minimal() +
       labs(
         title = get_friendly_title(input$data_type, input$sub_region, input$year),
-        fill = "Value"
-      )+
+        fill = legend_label # Use the dynamic label for the legend
+      ) +
       theme(
         axis.text = element_blank(),
         axis.ticks = element_blank(),
         panel.grid = element_blank(),
-        plot.title = element_text(hjust = 0.5) 
+        plot.title = element_text(hjust = 0.5),
       )
     
     ggplotly(map_plot, tooltip = "text")
   })
+  
+
   
   
   
@@ -127,12 +140,31 @@ server <- function(input, output) {
     
     # Create the line chart directly with Plotly
     plot_ly(region_data, x = ~year) %>%
-      add_lines(y = ~incidents_per100k, name = "Incidents per 100k", line = list(color = "blue")) %>%
-      add_lines(y = ~deaths_per100k, name = "Deaths per 100k", line = list(color = "red")) %>%
-      add_lines(y = ~unemployment_value, name = "Unemployment Rate", yaxis = "y2", line = list(dash = "dash", color = "green")) %>%
+      add_lines(
+        y = ~incidents_per100k,
+        name = "Avg. Incidents per 100k",
+        line = list(color = "blue"),
+        hoverinfo = "text",
+        text = ~paste0("Year: ", year, "<br>Incidents per 100k: ", round(incidents_per100k, 1))
+      ) %>%
+      add_lines(
+        y = ~deaths_per100k,
+        name = "Avg. Deaths per 100k",
+        line = list(color = "red"),
+        hoverinfo = "text",
+        text = ~paste0("Year: ", year, "<br>Deaths per 100k: ", round(deaths_per100k, 1))
+      ) %>%
+      add_lines(
+        y = ~unemployment_value,
+        name = "Avg. Unemployment Rate (%)",
+        yaxis = "y2",
+        line = list(dash = "dash", color = "green"),
+        hoverinfo = "text",
+        text = ~paste0("Year: ", year, "<br>Unemployment Rate: ", round(unemployment_value, 1))
+      ) %>%
       layout(
         title = paste("Time Trend for Sub-Region:", input$sub_region),
-        xaxis = list(title = ""), 
+        xaxis = list(title = ""),
         yaxis = list(title = "Incidents and Deaths per 100k"),
         yaxis2 = list(
           title = "Unemployment Rate",
@@ -140,8 +172,8 @@ server <- function(input, output) {
           side = "right"
         ),
         legend = list(
-          orientation = "v", 
-          x = 1.1, 
+          orientation = "v",
+          x = 1.1,
           y = 0.5,
           xanchor = "left"
         )
