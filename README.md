@@ -1,6 +1,6 @@
 # data-viz-employment-final-project
 
-# PPOL-5202 Final Project: Labor and global conflict
+# PPOL-5202 Final Project: Global conflict and employment
 
 ## Description
 
