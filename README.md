@@ -49,7 +49,7 @@ The slide deck for our project presentation is available in the `03_Presentation
 
 ## Authors
 
-Jungling Shao, Katharyn Loweth, Maria Bartlett, Sam Cohen, Shun Liu, & Yuhan Ma
+Junling Shao, Katharyn Loweth, Maria Bartlett, Sam Cohen, Shun Liu, & Yuhan Ma
 
 ## Data Source References
 
